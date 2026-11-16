@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anwu & Chris - Nasa Space Apps</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Orbitron, Space Grotesk & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif'],
+                        grotesk: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        cosmic: {
+                            950: '#04060d',
+                            900: '#090d1a',
+                            800: '#11182c',
+                        },
+                        lunar: {
+                            light: '#e2e8f0',
+                            glow: '#38bdf8',
+                            accent: '#7dd3fc',
+                        },
+                        mars: {
+                            light: '#fdba74',
+                            glow: '#f97316',
+                            accent: '#ea580c',
+                            crimson: '#9a3412',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#04060d] text-slate-200 font-sans antialiased overflow-x-hidden selection:bg-sky-500/30 selection:text-sky-200">
+
+    <!-- Animated Starfield & Nebula Canvas -->
+    <canvas id="starfield" class="fixed inset-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- Ambient Nebula Overlays -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-sky-500/10 blur-[130px]"></div>
+        <div class="absolute top-1/2 -right-40 w-[600px] h-[600px] rounded-full bg-orange-600/10 blur-[150px]"></div>
+        <div class="absolute -bottom-40 left-1/3 w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[140px]"></div>
+    </div>
+
+    <!-- Floating Glassmorphism Navigation -->
+    <header class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-5xl">
+        <nav class="bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl shadow-black/50">
+            <a href="#hero" class="flex items-center gap-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-400 to-orange-500 p-[1.5px] transition-transform duration-300 group-hover:rotate-12">
+                    <div class="w-full h-full bg-[#04060d] rounded-[6px] flex items-center justify-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+                    </div>
+                </div>
+                <span class="font-display font-bold tracking-widest text-sm sm:text-base text-white">Anwu<span class="text-orange-400"> & </span><span class="text-sky-400">Chris</span></span>
+            </a>
+
+            <div class="flex items-center gap-1 sm:gap-2">
+                <a href="#hero" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-grotesk font-medium text-slate-300 hover:text-white hover:bg-white/10 transition">Overview</a>
+                <a href="#moon" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-grotesk font-medium text-sky-300 hover:text-white hover:bg-sky-500/20 border border-transparent hover:border-sky-400/30 transition flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-sky-400"></span>Moon
+                </a>
+                <a href="#mars" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-grotesk font-medium text-orange-300 hover:text-white hover:bg-orange-500/20 border border-transparent hover:border-orange-400/30 transition flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-orange-500"></span>Mars
+                </a>
+                <a href="#calculator" class="hidden md:inline-flex px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-grotesk font-medium bg-white/10 hover:bg-white/20 text-white border border-white/10 transition">
+                    Telemetry Lab
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="relative z-10">
+
+        <!-- HERO SECTION -->
+        <section id="hero" class="min-h-screen flex flex-col justify-center items-center px-4 pt-28 pb-16 max-w-7xl mx-auto text-center">
+            <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white max-w-4xl leading-[1.1] mb-6">
+                Analog locations for<br />
+                <span class="bg-gradient-to-r from-sky-300 via-white to-orange-400 bg-clip-text text-transparent">Mars and the Moon.</span>
+            </h1>
+
+            <!-- Dual Quick-Jump Portal Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full max-w-3xl mb-12">
+                <a href="#moon" class="group relative overflow-hidden rounded-3xl bg-slate-900/50 backdrop-blur-xl border border-sky-400/20 hover:border-sky-400/60 p-6 text-left transition-all duration-300 hover:-translate-y-1 shadow-xl shadow-sky-950/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-display tracking-widest text-sky-400 uppercase">Sector 01 // Luna</span>
+                        <span class="w-8 h-8 rounded-full bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-sky-300 group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-bold text-white mb-1">THE MOON</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">384,400 km away • 16.6% Earth Gravity • Artemis Gateway</p>
+                </a>
+
+                <a href="#mars" class="group relative overflow-hidden rounded-3xl bg-slate-900/50 backdrop-blur-xl border border-orange-500/20 hover:border-orange-500/60 p-6 text-left transition-all duration-300 hover:-translate-y-1 shadow-xl shadow-orange-950/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-display tracking-widest text-orange-400 uppercase">Sector 02 // Ares</span>
+                        <span class="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-300 group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-bold text-white mb-1">MARS</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">225M km avg • 38% Earth Gravity • Interplanetary Frontier</p>
+                </a>
+            </div>
+
+            <a href="#calculator" class="inline-flex items-center gap-2 text-xs font-grotesk uppercase tracking-widest text-slate-400 hover:text-white transition">
+                <span>Launch Weight & Signal Delay Simulator</span>
+                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </a>
+        </section>
+
+        <!-- SECTION 1: THE MOON -->
+        <section id="moon" class="py-20 sm:py-28 px-4 max-w-7xl mx-auto border-t border-white/10">
+            <!-- Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-300 text-xs font-display tracking-widest uppercase mb-3">
+                        Celestial Body 01 // Natural Satellite
+                    </div>
+                    <h2 class="font-display text-3xl sm:text-5xl font-black text-white tracking-tight">THE MOON <span class="text-sky-400 font-normal text-2xl sm:text-4xl">// LUNA</span></h2>
+                </div>
+                <p class="text-slate-400 max-w-md text-sm sm:text-base">
+                    Earth’s sole natural satellite—a tidally locked, airless world preserving 4.5 billion years of solar system impact history and polar water-ice reserves.
+                </p>
+            </div>
+
+            <!-- Interactive Planet Stage & Landmark Inspector -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12">
+                <!-- Interactive Moon Visualizer -->
+                <div class="lg:col-span-6 bg-slate-900/40 backdrop-blur-xl border border-sky-400/20 rounded-3xl p-6 sm:p-8 flex flex-col items-center relative overflow-hidden">
+                    <div class="w-full flex items-center justify-between text-xs font-grotesk text-slate-400 mb-4 z-10">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span> INTERACTIVE ORBITAL VIEW</span>
+                        <span id="moon-rotation-readout">LONGITUDE: 0°</span>
+                    </div>
+
+                    <!-- Planetary Sphere Container -->
+                    <div class="relative w-64 h-64 sm:w-80 sm:h-80 my-4 flex items-center justify-center select-none">
+                        <!-- Outer Atmospheric/Exosphere Halo -->
+                        <div class="absolute inset-0 rounded-full bg-sky-300/15 blur-2xl scale-110 pointer-events-none"></div>
+                        
+                        <!-- Moon SVG Sphere -->
+                        <div id="moon-sphere" class="relative w-full h-full rounded-full overflow-hidden shadow-[inset_-28px_-20px_50px_rgba(2,6,23,0.92),0_0_45px_rgba(125,211,252,0.25)] border border-sky-200/20 bg-slate-300 transition-transform duration-150">
+                            <svg id="moon-surface-svg" viewBox="0 0 400 400" class="w-[200%] h-full max-w-none transition-transform duration-75" style="transform: translateX(0px);">
+                                <defs>
+                                    <radialGradient id="lunarBase" cx="35%" cy="35%" r="70%">
+                                        <stop offset="0%" stop-color="#f1f5f9"/>
+                                        <stop offset="55%" stop-color="#cbd5e1"/>
+                                        <stop offset="100%" stop-color="#64748b"/>
+                                    </radialGradient>
+                                    <filter id="craterShadow">
+                                        <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#0f172a" flood-opacity="0.45"/>
+                                    </filter>
+                                </defs>
+                                <!-- Repeating Seamless Surface Map (800x400) -->
+                                <rect x="0" y="0" width="800" height="400" fill="url(#lunarBase)"/>
+                                <!-- Maria (Dark Basaltic Plains) -->
+                                <path d="M90,110 Q140,80 185,120 T230,180 Q190,220 130,200 T90,110 Z" fill="#475569" opacity="0.45"/>
+                                <path d="M220,90 Q270,75 305,115 T285,175 Q240,170 220,90 Z" fill="#334155" opacity="0.5"/>
+                                <path d="M490,110 Q540,80 585,120 T630,180 Q590,220 530,200 T490,110 Z" fill="#475569" opacity="0.45"/>
+                                <path d="M620,90 Q670,75 705,115 T685,175 Q640,170 620,90 Z" fill="#334155" opacity="0.5"/>
+                                
+                                <!-- Detailed Craters & Rays -->
+                                <g filter="url(#craterShadow)" opacity="0.7">
+                                    <!-- Tycho Rays & Crater -->
+                                    <circle cx="175" cy="305" r="16" fill="#94a3b8" stroke="#e2e8f0" stroke-width="2"/>
+                                    <circle cx="575" cy="305" r="16" fill="#94a3b8" stroke="#e2e8f0" stroke-width="2"/>
+                                    <!-- Copernicus -->
+                                    <circle cx="120" cy="185" r="14" fill="#64748b" stroke="#cbd5e1" stroke-width="1.5"/>
+                                    <circle cx="520" cy="185" r="14" fill="#64748b" stroke="#cbd5e1" stroke-width="1.5"/>
+                                    <!-- Smaller Impact Basins -->
+                                    <circle cx="265" cy="235" r="11" fill="#64748b"/>
+                                    <circle cx="665" cy="235" r="11" fill="#64748b"/>
+                                    <circle cx="75" cy="245" r="9" fill="#475569"/>
+                                    <circle cx="475" cy="245" r="9" fill="#475569"/>
+                                    <circle cx="310" cy="150" r="13" fill="#475569"/>
+                                    <circle cx="710" cy="150" r="13" fill="#475569"/>
+                                    <circle cx="200" cy="365" r="12" fill="#334155"/>
+                                    <circle cx="600" cy="365" r="12" fill="#334155"/>
+                                </g>
+                            </svg>
+
+                            <!-- Shadow Terminator Overlay for 3D Spherical Depth -->
+                            <div class="absolute inset-0 rounded-full pointer-events-none" style="background: radial-gradient(circle at 32% 30%, transparent 45%, rgba(2, 6, 23, 0.85) 95%);"></div>
+                        </div>
+
+                        <!-- Interactive Hotspots on Moon -->
+                        <button onclick="selectLandmark('moon', 0)" data-moon-spot="0" class="moon-hotspot absolute top-[34%] left-[62%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-sky-400/30 border-2 border-sky-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20 ring-4 ring-sky-400/20" title="Sea of Tranquility">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                        <button onclick="selectLandmark('moon', 1)" data-moon-spot="1" class="moon-hotspot absolute top-[72%] left-[44%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-sky-400/30 border-2 border-sky-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20" title="Tycho Crater">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                        <button onclick="selectLandmark('moon', 2)" data-moon-spot="2" class="moon-hotspot absolute top-[89%] left-[52%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-sky-400/30 border-2 border-sky-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20" title="Shackleton Crater">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                    </div>
+
+                    <!-- Rotation & Spin Controls -->
+                    <div class="w-full max-w-sm mt-4 space-y-3 z-10">
+                        <div class="flex items-center gap-3">
+                            <button id="moon-spin-btn" onclick="toggleAutoSpin('moon')" class="px-3 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 text-xs font-grotesk font-medium transition shrink-0">
+                                Pause Orbit
+                            </button>
+                            <input id="moon-slider" type="range" min="0" max="360" value="0" oninput="manualRotate('moon', this.value)" class="w-full accent-sky-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+                        </div>
+                        <p class="text-center text-[11px] text-slate-400">Click pulsing surface beacons or drag slider to inspect lunar coordinates</p>
+                    </div>
+                </div>
+
+                <!-- Landmark Spotlight & Telemetry Grid -->
+                <div class="lg:col-span-6 space-y-6">
+                    <!-- Active Landmark Card -->
+                    <div class="bg-slate-900/60 backdrop-blur-xl border border-sky-400/30 rounded-3xl p-6 sm:p-7 transition-all">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-display uppercase tracking-widest text-sky-400">Surface Landmark Beacon</span>
+                            <div class="flex gap-1.5">
+                                <button onclick="selectLandmark('moon', 0)" class="moon-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-sky-500/20 text-sky-200 border border-sky-400/40 transition">Tranquility</button>
+                                <button onclick="selectLandmark('moon', 1)" class="moon-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-white/5 text-slate-400 border border-white/10 hover:text-white transition">Tycho</button>
+                                <button onclick="selectLandmark('moon', 2)" class="moon-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-white/5 text-slate-400 border border-white/10 hover:text-white transition">Shackleton</button>
+                            </div>
+                        </div>
+                        <h3 id="moon-lm-title" class="font-display text-2xl font-bold text-white mb-1">Sea of Tranquility (Mare Tranquillitatis)</h3>
+                        <p id="moon-lm-coords" class="text-xs font-grotesk text-sky-300/80 mb-3">COORDINATES: 0.6741° N, 23.4730° E • ELEVATION: -1.8 KM</p>
+                        <p id="moon-lm-desc" class="text-sm text-slate-300 leading-relaxed">
+                            A vast basaltic lunar mare formed by ancient volcanic eruptions over 3.5 billion years ago. Famous as the historic landing site of Apollo 11 on July 20, 1969, where humans first walked on another celestial body.
+                        </p>
+                    </div>
+
+                    <!-- 5-Metric Telemetry Matrix -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Avg Distance</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">384,400 <span class="text-xs text-sky-400 font-normal">km</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Surface Gravity</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">1.62 <span class="text-xs text-sky-400 font-normal">m/s² (0.166g)</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Surface Temp</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">-173° to 127°<span class="text-xs text-sky-400 font-normal">C</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Solar Day</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">29.5 <span class="text-xs text-sky-400 font-normal">Earth Days</span></span>
+                        </div>
+                        <div class="col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Atmosphere</span>
+                            <span class="font-display text-sm sm:text-base font-bold text-white">Ultra-thin Exosphere <span class="text-xs text-sky-300 font-normal">(Helium, Neon, Argon, Hydrogen)</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lunar Missions Timeline Cards -->
+            <div>
+                <h3 class="font-display text-lg font-bold text-white tracking-wider uppercase mb-4 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-sky-400"></span> Earth Locations to simulate the Moon
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-sky-400">Extreme Cold</span>
+                            
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Antartica</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            These polar regions experience prolonged periods of darkness and very low-angle sunlight, mirroring the lighting challenges at the lunar South Pole. Concordia Station also offers extreme isolation and sub-zero temperatures to test crew psychology and cold-weather hardware.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-sky-400">Extreme Cold </span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Devon Island, Canada</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Located in the High Arctic, this barren polar desert features permafrost, freezing temperatures, and rugged terrain used extensively to test lunar rovers and spacesuits.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Volcanic Terrain</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Craters of the Moon National Monument</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            This vast volcanic landscape features lava flows, cinder cones, and fine basaltic dust that closely resemble the geology and abrasive nature of lunar regolith.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Volcanic Terrain</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Mount Etna</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            The European Space Agency (ESA) uses these volcanic fields to train astronauts in geological sampling, autonomous rover navigation, and operating in dark, jagged basaltic environments.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Volcanic Terrain</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Mauna Kea, Hawaii</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            The high-altitude volcanic slopes provide fine, dusty basaltic soil (used to make lunar regolith simulants) and low-humidity conditions ideal for testing resource extraction and construction tech.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-sky-400/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-brown-400">Subsurface</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Caves of Lanzarote</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            These underground volcanic lava tubes serve as testbeds for future lunar habitats, helping engineers study how subsurface structures can shield astronauts from radiation and extreme temperature swings.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MARS -->
+        <section id="mars" class="py-20 sm:py-28 px-4 max-w-7xl mx-auto border-t border-white/10">
+            <!-- Section Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-400/30 text-orange-300 text-xs font-display tracking-widest uppercase mb-3">
+                        Celestial Body 02 // Terrestrial Planet
+                    </div>
+                    <h2 class="font-display text-3xl sm:text-5xl font-black text-white tracking-tight">MARS <span class="text-orange-500 font-normal text-2xl sm:text-4xl">// THE RED PLANET</span></h2>
+                </div>
+                <p class="text-slate-400 max-w-md text-sm sm:text-base">
+                    A cold, iron-oxide desert world home to the solar system’s tallest volcano, deepest canyon, ancient river deltas, and humanity’s next great frontier.
+                </p>
+            </div>
+
+            <!-- Interactive Planet Stage & Landmark Inspector -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12">
+                <!-- Landmark Spotlight & Telemetry Grid (Alternating layout on desktop) -->
+                <div class="lg:col-span-6 order-2 lg:order-1 space-y-6">
+                    <!-- Active Landmark Card -->
+                    <div class="bg-slate-900/60 backdrop-blur-xl border border-orange-500/30 rounded-3xl p-6 sm:p-7 transition-all">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-display uppercase tracking-widest text-orange-400">Surface Landmark Beacon</span>
+                            <div class="flex gap-1.5">
+                                <button onclick="selectLandmark('mars', 0)" class="mars-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-orange-500/20 text-orange-200 border border-orange-400/40 transition">Olympus Mons</button>
+                                <button onclick="selectLandmark('mars', 1)" class="mars-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-white/5 text-slate-400 border border-white/10 hover:text-white transition">Valles Marineris</button>
+                                <button onclick="selectLandmark('mars', 2)" class="mars-tab px-2.5 py-1 rounded-lg text-xs font-grotesk bg-white/5 text-slate-400 border border-white/10 hover:text-white transition">Jezero Crater</button>
+                            </div>
+                        </div>
+                        <h3 id="mars-lm-title" class="font-display text-2xl font-bold text-white mb-1">Olympus Mons</h3>
+                        <p id="mars-lm-coords" class="text-xs font-grotesk text-orange-300/80 mb-3">COORDINATES: 18.65° N, 226.2° E • SUMMIT HEIGHT: 21.9 KM</p>
+                        <p id="mars-lm-desc" class="text-sm text-slate-300 leading-relaxed">
+                            The largest known shield volcano in the solar system—nearly three times the height of Mount Everest and spanning 600 km across, sustained by Mars’ stationary crust over a persistent magma hotspot.
+                        </p>
+                    </div>
+
+                    <!-- 5-Metric Telemetry Matrix -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Avg Distance</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">225M <span class="text-xs text-orange-400 font-normal">km</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Surface Gravity</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">3.72 <span class="text-xs text-orange-400 font-normal">m/s² (0.38g)</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Surface Temp</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">-140° to 20°<span class="text-xs text-orange-400 font-normal">C</span></span>
+                        </div>
+                        <div class="bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Martian Sol</span>
+                            <span class="font-display text-lg sm:text-xl font-bold text-white">24h 39m <span class="text-xs text-orange-400 font-normal">35s</span></span>
+                        </div>
+                        <div class="col-span-2 bg-slate-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4">
+                            <span class="text-[11px] font-grotesk uppercase tracking-wider text-slate-400 block mb-1">Atmosphere</span>
+                            <span class="font-display text-sm sm:text-base font-bold text-white">95.3% CO₂ <span class="text-xs text-orange-300 font-normal">(2.6% N₂, 1.9% Ar • 0.6% Earth pressure)</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Mars Visualizer -->
+                <div class="lg:col-span-6 order-1 lg:order-2 bg-slate-900/40 backdrop-blur-xl border border-orange-500/20 rounded-3xl p-6 sm:p-8 flex flex-col items-center relative overflow-hidden">
+                    <div class="w-full flex items-center justify-between text-xs font-grotesk text-slate-400 mb-4 z-10">
+                        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span> INTERACTIVE ORBITAL VIEW</span>
+                        <span id="mars-rotation-readout">LONGITUDE: 0°</span>
+                    </div>
+
+                    <!-- Planetary Sphere Container -->
+                    <div class="relative w-64 h-64 sm:w-80 sm:h-80 my-4 flex items-center justify-center select-none">
+                        <!-- Dusty Rust Atmospheric Halo -->
+                        <div class="absolute inset-0 rounded-full bg-orange-500/20 blur-2xl scale-110 pointer-events-none"></div>
+
+                        <!-- Mars SVG Sphere -->
+                        <div id="mars-sphere" class="relative w-full h-full rounded-full overflow-hidden shadow-[inset_-28px_-20px_50px_rgba(15,5,2,0.94),0_0_50px_rgba(249,115,22,0.3)] border border-orange-300/20 bg-orange-800">
+                            <svg id="mars-surface-svg" viewBox="0 0 400 400" class="w-[200%] h-full max-w-none transition-transform duration-75" style="transform: translateX(0px);">
+                                <defs>
+                                    <radialGradient id="marsBase" cx="35%" cy="35%" r="75%">
+                                        <stop offset="0%" stop-color="#fb923c"/>
+                                        <stop offset="50%" stop-color="#c2410c"/>
+                                        <stop offset="100%" stop-color="#431407"/>
+                                    </radialGradient>
+                                </defs>
+                                <!-- Repeating Seamless Surface Map (800x400) -->
+                                <rect x="0" y="0" width="800" height="400" fill="url(#marsBase)"/>
+                                
+                                <!-- Polar Ice Caps -->
+                                <ellipse cx="200" cy="14" rx="140" ry="18" fill="#f8fafc" opacity="0.85"/>
+                                <ellipse cx="600" cy="14" rx="140" ry="18" fill="#f8fafc" opacity="0.85"/>
+                                <ellipse cx="200" cy="390" rx="110" ry="14" fill="#f8fafc" opacity="0.75"/>
+                                <ellipse cx="600" cy="390" rx="110" ry="14" fill="#f8fafc" opacity="0.75"/>
+
+                                <!-- Dark Basaltic Albedo Regions (Syrtis Major, Acidalia) -->
+                                <path d="M60,140 Q120,100 175,155 T230,220 Q175,260 110,235 T60,140 Z" fill="#451a03" opacity="0.5"/>
+                                <path d="M460,140 Q520,100 575,155 T630,220 Q575,260 510,235 T460,140 Z" fill="#451a03" opacity="0.5"/>
+                                
+                                <!-- Valles Marineris Canyon Scar -->
+                                <path d="M165,215 Q225,205 295,225 Q235,235 165,215 Z" fill="#290d02" opacity="0.75"/>
+                                <path d="M565,215 Q625,205 695,225 Q635,235 565,215 Z" fill="#290d02" opacity="0.75"/>
+
+                                <!-- Olympus Mons Shield Dome -->
+                                <circle cx="115" cy="135" r="24" fill="#9a3412" stroke="#fdba74" stroke-width="1.5" opacity="0.8"/>
+                                <circle cx="115" cy="135" r="7" fill="#431407"/>
+                                <circle cx="515" cy="135" r="24" fill="#9a3412" stroke="#fdba74" stroke-width="1.5" opacity="0.8"/>
+                                <circle cx="515" cy="135" r="7" fill="#431407"/>
+
+                                <!-- Jezero & Hellas Impact Basins -->
+                                <circle cx="285" cy="145" r="14" fill="#7c2d12" stroke="#fb923c" stroke-width="1" opacity="0.75"/>
+                                <circle cx="685" cy="145" r="14" fill="#7c2d12" stroke="#fb923c" stroke-width="1" opacity="0.75"/>
+                                <circle cx="240" cy="295" r="22" fill="#451a03" opacity="0.45"/>
+                                <circle cx="640" cy="295" r="22" fill="#451a03" opacity="0.45"/>
+                            </svg>
+
+                            <!-- Thin Dusty Atmospheric Rim + Terminator Shadow -->
+                            <div class="absolute inset-0 rounded-full pointer-events-none" style="background: radial-gradient(circle at 32% 30%, transparent 45%, rgba(12, 4, 1, 0.88) 95%); box-shadow: inset 0 0 18px rgba(251, 146, 60, 0.45);"></div>
+                        </div>
+
+                        <!-- Interactive Hotspots on Mars -->
+                        <button onclick="selectLandmark('mars', 0)" data-mars-spot="0" class="mars-hotspot absolute top-[34%] left-[32%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-orange-500/30 border-2 border-orange-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20 ring-4 ring-orange-500/20" title="Olympus Mons">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                        <button onclick="selectLandmark('mars', 1)" data-mars-spot="1" class="mars-hotspot absolute top-[55%] left-[58%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-orange-500/30 border-2 border-orange-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20" title="Valles Marineris">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                        <button onclick="selectLandmark('mars', 2)" data-mars-spot="2" class="mars-hotspot absolute top-[38%] left-[72%] -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-orange-500/30 border-2 border-orange-300 flex items-center justify-center hover:scale-125 transition cursor-pointer z-20" title="Jezero Crater">
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </button>
+                    </div>
+
+                    <!-- Rotation & Spin Controls -->
+                    <div class="w-full max-w-sm mt-4 space-y-3 z-10">
+                        <div class="flex items-center gap-3">
+                            <button id="mars-spin-btn" onclick="toggleAutoSpin('mars')" class="px-3 py-1.5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-400/40 text-orange-200 text-xs font-grotesk font-medium transition shrink-0">
+                                Pause Orbit
+                            </button>
+                            <input id="mars-slider" type="range" min="0" max="360" value="0" oninput="manualRotate('mars', this.value)" class="w-full accent-orange-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+                        </div>
+                        <p class="text-center text-[11px] text-slate-400">Click pulsing surface beacons or drag slider to inspect Martian terrain</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Martian Missions Timeline Cards -->
+            <div>
+                <h3 class="font-display text-lg font-bold text-white tracking-wider uppercase mb-4 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-orange-500"></span> Earth Locations to simulate Mars
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Hyper-Arid Deserts</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Atacama Desert, Chile</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            As the driest non-polar desert on Earth, the Atacama mimics Mars's extreme lack of moisture, high ultraviolet radiation, and salty, nutrient-poor soil. NASA uses this site to test life-detection instruments and autonomous rovers.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Hyper-Arid Deserts</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Wadi Rum, Jordan</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Known as the Valley of the Moon, this desert features towering sandstone mountains and iron-rich red sand that mirror the visual landscape and dusty conditions of the Martian surface.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-orange-400">Hyper-Arid Deserts</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Hanksville, Utah</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Operated by The Mars Society, this remote desert region contains iron-rich clay and geological formations resembling ancient Martian riverbeds. Crews live in a simulated habitat here to test field science protocols and teamwork.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-sky-400">Extreme Cold</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">McMurdo Dry Valleys</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            These ice-free polar valleys represent the closest terrestrial match to the cold, hyper-arid conditions of Mars. Scientists study microbial life in the frozen soil to understand how organisms might survive on the Red Planet.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-sky-400">Extreme Cold</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Devon Island, Canada</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Located in the High Arctic, this uninhabited island features a massive impact crater and freezing polar desert conditions. It serves as a primary site for testing spacesuits, drills, and habitats in sub-zero isolation.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-red-400">Volcanic Terrain</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Mauna Loa, Hawaii</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Situated at 8,200 feet on a barren volcanic slope, this solar-powered habitat isolates crews for months at a time. The surrounding basaltic lava flows mimic the volcanic geology of Mars, while the isolation tests psychological resilience and delayed communications.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/40 backdrop-blur-lg border border-white/10 hover:border-orange-500/40 rounded-2xl p-5 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-display text-red-400">Volcanic Terrain</span>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-white mb-2">Rio Tinto, Spain</h4>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            This river basin contains high concentrations of iron and sulfur, creating acidic, rust-colored water and rock formations. Researchers study the area to understand the mineralogical history of Mars and test subsurface drilling equipment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: INTERACTIVE WEIGHT & TRAVEL TIME SIMULATOR -->
+        <section id="calculator" class="py-20 sm:py-28 px-4 max-w-6xl mx-auto border-t border-white/10">
+            <div class="bg-slate-900/60 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 sm:p-10 shadow-2xl">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <span class="text-xs font-display tracking-[0.2em] uppercase text-indigo-400 block mb-2">Interactive Telemetry Lab</span>
+                    <h2 class="font-display text-2xl sm:text-4xl font-black text-white mb-3">OFF-WORLD WEIGHT & TRANSIT SIMULATOR</h2>
+                    <p class="text-sm text-slate-400">
+                        Enter your Earth weight and select an orbital alignment window to compare surface gravity, jump height, one-way radio delay, and spacecraft transit duration.
+                    </p>
+                </div>
+
+                <!-- Controls Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 bg-black/30 p-5 sm:p-6 rounded-2xl border border-white/10">
+                    <!-- Weight Input -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="earth-weight" class="text-xs font-grotesk uppercase tracking-wider text-slate-300">Your Earth Weight</label>
+                            <div class="inline-flex rounded-lg bg-slate-800 p-0.5 border border-white/10">
+                                <button id="unit-kg" onclick="setUnit('kg')" class="px-2.5 py-0.5 rounded-md text-xs font-grotesk bg-indigo-500 text-white transition">KG</button>
+                                <button id="unit-lbs" onclick="setUnit('lbs')" class="px-2.5 py-0.5 rounded-md text-xs font-grotesk text-slate-400 hover:text-white transition">LBS</button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <input id="earth-weight" type="number" min="1" max="2000" value="75" oninput="updateSimulator()" class="w-28 bg-slate-800/80 border border-white/15 rounded-xl px-3.5 py-2.5 font-display text-xl font-bold text-white focus:outline-none focus:border-indigo-400">
+                            <input id="earth-weight-slider" type="range" min="20" max="200" value="75" oninput="syncWeightSlider(this.value)" class="w-full accent-indigo-400 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Orbital Alignment Toggle -->
+                    <div>
+                        <label class="text-xs font-grotesk uppercase tracking-wider text-slate-300 block mb-2">Planetary Alignment Window</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button id="align-closest" onclick="setAlignment('closest')" class="px-4 py-3 rounded-xl text-left border border-indigo-400/50 bg-indigo-500/20 text-white transition">
+                                <div class="text-xs font-display font-bold">OPPOSITION (CLOSEST)</div>
+                                <div class="text-[11px] text-indigo-200/80">Hohmann Launch Window</div>
+                            </button>
+                            <button id="align-conjunction" onclick="setAlignment('conjunction')" class="px-4 py-3 rounded-xl text-left border border-white/10 bg-slate-800/60 text-slate-400 hover:text-white transition">
+                                <div class="text-xs font-display font-bold">CONJUNCTION (FAR)</div>
+                                <div class="text-[11px] text-slate-400">Opposite Sides of Sun</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Output Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Moon Result Card -->
+                    <div class="rounded-2xl bg-gradient-to-br from-sky-950/60 to-slate-900/80 border border-sky-400/30 p-6 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <span class="text-xs font-display tracking-widest text-sky-400 uppercase">Lunar Surface</span>
+                                <h3 class="font-display text-2xl font-bold text-white">THE MOON</h3>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-sky-400/10 border border-sky-400/30 text-sky-300 font-display text-xs">0.166 G</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-black/30 rounded-xl p-4 border border-white/5">
+                                <span class="text-xs text-slate-400 block mb-1">Your Lunar Weight</span>
+                                <span id="moon-weight-out" class="font-display text-3xl font-black text-sky-300">12.4 <span class="text-sm font-normal">kg</span></span>
+                            </div>
+                            <div class="bg-black/30 rounded-xl p-4 border border-white/5">
+                                <span class="text-xs text-slate-400 block mb-1">Vertical Leap</span>
+                                <span class="font-display text-3xl font-black text-white">~3.0 <span class="text-sm font-normal text-sky-300">m</span></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-sm border-t border-white/10 pt-4">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Current Distance:</span>
+                                <span id="moon-dist-out" class="font-grotesk font-semibold text-white">363,300 km (Perigee)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">One-Way Radio Delay:</span>
+                                <span id="moon-ping-out" class="font-grotesk font-semibold text-sky-300">1.21 seconds</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Crewed Spacecraft Transit:</span>
+                                <span id="moon-travel-out" class="font-grotesk font-semibold text-white">~3 Days</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mars Result Card -->
+                    <div class="rounded-2xl bg-gradient-to-br from-orange-950/60 to-slate-900/80 border border-orange-500/30 p-6 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <span class="text-xs font-display tracking-widest text-orange-400 uppercase">Martian Surface</span>
+                                <h3 class="font-display text-2xl font-bold text-white">MARS</h3>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-300 font-display text-xs">0.380 G</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-black/30 rounded-xl p-4 border border-white/5">
+                                <span class="text-xs text-slate-400 block mb-1">Your Martian Weight</span>
+                                <span id="mars-weight-out" class="font-display text-3xl font-black text-orange-400">28.5 <span class="text-sm font-normal">kg</span></span>
+                            </div>
+                            <div class="bg-black/30 rounded-xl p-4 border border-white/5">
+                                <span class="text-xs text-slate-400 block mb-1">Vertical Leap</span>
+                                <span class="font-display text-3xl font-black text-white">~1.3 <span class="text-sm font-normal text-orange-400">m</span></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 text-sm border-t border-white/10 pt-4">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Current Distance:</span>
+                                <span id="mars-dist-out" class="font-grotesk font-semibold text-white">54.6 Million km</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">One-Way Radio Delay:</span>
+                                <span id="mars-ping-out" class="font-grotesk font-semibold text-orange-300">3 min 02 sec</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Spacecraft Transit:</span>
+                                <span id="mars-travel-out" class="font-grotesk font-semibold text-white">6 – 8 Months</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-white/10 py-10 px-4 text-center text-xs text-slate-500 font-grotesk">
+        <p class="tracking-widest uppercase mb-1 text-slate-400">Anwu & Chris' Nasa Space Apps Submission</p>
+        
+    </footer>
+
+    <!-- Interactive Logic & Starfield Simulation -->
+    <script>
+        /* =========================================
+           1. ANIMATED STARFIELD BACKGROUND CANVAS
+        ========================================= */
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let width, height;
+
+        function initStarfield() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            stars = [];
+            const count = Math.min(Math.floor((width * height) / 6000), 260);
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 1.5 + 0.3,
+                    alpha: Math.random() * 0.8 + 0.2,
+                    twinkleSpeed: (Math.random() * 0.02) + 0.005,
+                    driftY: (Math.random() * 0.15) + 0.03
+                });
+            }
+        }
+
+        function animateStarfield() {
+            ctx.clearRect(0, 0, width, height);
+            for (let s of stars) {
+                s.alpha += s.twinkleSpeed;
+                if (s.alpha > 1 || s.alpha < 0.15) s.twinkleSpeed *= -1;
+                s.y -= s.driftY;
+                if (s.y < 0) {
+                    s.y = height;
+                    s.x = Math.random() * width;
+                }
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(226, 232, 240, ${s.alpha})`;
+                ctx.fill();
+            }
+            requestAnimationFrame(animateStarfield);
+        }
+
+        window.addEventListener('resize', initStarfield);
+        initStarfield();
+        animateStarfield();
+
+        /* =========================================
+           2. PLANETARY LANDMARK DATA & SELECTOR
+        ========================================= */
+        const landmarks = {
+            moon: [
+                {
+                    title: "Sea of Tranquility (Mare Tranquillitatis)",
+                    coords: "COORDINATES: 0.6741° N, 23.4730° E • ELEVATION: -1.8 KM",
+                    desc: "A vast basaltic lunar mare formed by ancient volcanic eruptions over 3.5 billion years ago. Famous as the historic landing site of Apollo 11 on July 20, 1969, where humans first walked on another celestial body."
+                },
+                {
+                    title: "Tycho Crater",
+                    coords: "COORDINATES: 43.31° S, 11.36° W • DIAMETER: 85 KM",
+                    desc: "A prominent, relatively young impact crater (108 million years old) in the southern lunar highlands, surrounded by a dramatic system of bright ejecta rays stretching over 1,500 km across the Moon."
+                },
+                {
+                    title: "Shackleton Crater (South Pole)",
+                    coords: "COORDINATES: 89.90° S, 0.00° E • DEPTH: 4.2 KM",
+                    desc: "Located at the lunar South Pole, its rim enjoys near-continuous sunlight for solar power while its permanently shadowed interior traps ancient water ice—making it the prime target for Artemis base camps."
+                }
+            ],
+            mars: [
+                {
+                    title: "Olympus Mons",
+                    coords: "COORDINATES: 18.65° N, 226.2° E • SUMMIT HEIGHT: 21.9 KM",
+                    desc: "The largest known shield volcano in the solar system—nearly three times the height of Mount Everest and spanning 600 km across, sustained by Mars’ stationary crust over a persistent magma hotspot."
+                },
+                {
+                    title: "Valles Marineris",
+                    coords: "COORDINATES: 13.9° S, 300.8° E • LENGTH: 4,000 KM",
+                    desc: "A colossal tectonic rift canyon system stretching over a fifth of Mars’ circumference and plunging up to 7 km deep—dwarfing Earth’s Grand Canyon in both scale and geological drama."
+                },
+                {
+                    title: "Jezero Crater",
+                    coords: "COORDINATES: 18.38° N, 77.58° E • DIAMETER: 45 KM",
+                    desc: "An ancient paleolake basin featuring a remarkably preserved fan-shaped river delta. Currently explored by NASA’s Perseverance rover in search of fossilized microbial biosignatures."
+                }
+            ]
+        };
+
+        function selectLandmark(body, index) {
+            const data = landmarks[body][index];
+            document.getElementById(`${body}-lm-title`).textContent = data.title;
+            document.getElementById(`${body}-lm-coords`).textContent = data.coords;
+            document.getElementById(`${body}-lm-desc`).textContent = data.desc;
+
+            // Update tab button styles
+            const tabs = document.querySelectorAll(`.${body}-tab`);
+            const activeClasses = body === 'moon'
+                ? ['bg-sky-500/20', 'text-sky-200', 'border-sky-400/40']
+                : ['bg-orange-500/20', 'text-orange-200', 'border-orange-400/40'];
+
+            tabs.forEach((tab, idx) => {
+                tab.classList.remove('bg-sky-500/20', 'text-sky-200', 'border-sky-400/40', 'bg-orange-500/20', 'text-orange-200', 'border-orange-400/40', 'bg-white/5', 'text-slate-400', 'border-white/10');
+                if (idx === index) {
+                    tab.classList.add(...activeClasses);
+                } else {
+                    tab.classList.add('bg-white/5', 'text-slate-400', 'border-white/10');
+                }
+            });
+
+            // Highlight active hotspot ring
+            const spots = document.querySelectorAll(`.${body}-hotspot`);
+            const ringClass = body === 'moon' ? 'ring-sky-400/30' : 'ring-orange-500/30';
+            spots.forEach((spot, idx) => {
+                spot.classList.remove('ring-4', 'ring-sky-400/20', 'ring-sky-400/30', 'ring-orange-500/20', 'ring-orange-500/30', 'scale-125');
+                if (idx === index) {
+                    spot.classList.add('ring-4', ringClass, 'scale-125');
+                }
+            });
+        }
+
+        /* =========================================
+           3. PLANET ROTATION & ORBIT CONTROLS
+        ========================================= */
+        const orbitState = {
+            moon: { angle: 0, spinning: true },
+            mars: { angle: 45, spinning: true }
+        };
+
+        function applyPlanetRotation(body) {
+            const angle = orbitState[body].angle;
+            const svg = document.getElementById(`${body}-surface-svg`);
+            const slider = document.getElementById(`${body}-slider`);
+            const readout = document.getElementById(`${body}-rotation-readout`);
+
+            // Map 0-360 degrees to 0% -> -50% of the double-width SVG
+            const shiftPercent = -(angle / 360) * 50;
+            svg.style.transform = `translateX(${shiftPercent}%)`;
+            slider.value = Math.round(angle);
+            readout.textContent = `LONGITUDE: ${Math.round(angle)}°`;
+        }
+
+        function manualRotate(body, val) {
+            orbitState[body].angle = parseFloat(val);
+            applyPlanetRotation(body);
+        }
+
+        function toggleAutoSpin(body) {
+            orbitState[body].spinning = !orbitState[body].spinning;
+            const btn = document.getElementById(`${body}-spin-btn`);
+            btn.textContent = orbitState[body].spinning ? 'Pause Orbit' : 'Resume Orbit';
+        }
+
+        function planetSpinLoop() {
+            if (orbitState.moon.spinning) {
+                orbitState.moon.angle = (orbitState.moon.angle + 0.12) % 360;
+                applyPlanetRotation('moon');
+            }
+            if (orbitState.mars.spinning) {
+                orbitState.mars.angle = (orbitState.mars.angle + 0.18) % 360;
+                applyPlanetRotation('mars');
+            }
+            requestAnimationFrame(planetSpinLoop);
+        }
+        planetSpinLoop();
+
+        /* =========================================
+           4. WEIGHT & TRAVEL TIME SIMULATOR
+        ========================================= */
+        let currentUnit = 'kg';
+        let currentAlignment = 'closest';
+
+        function setUnit(unit) {
+            const input = document.getElementById('earth-weight');
+            const slider = document.getElementById('earth-weight-slider');
+            let val = parseFloat(input.value) || 75;
+
+            if (unit !== currentUnit) {
+                if (unit === 'lbs') {
+                    val = Math.round(val * 2.20462);
+                    slider.min = 45;
+                    slider.max = 450;
+                } else {
+                    val = Math.round(val / 2.20462);
+                    slider.min = 20;
+                    slider.max = 200;
+                }
+                input.value = val;
+                slider.value = Math.min(Math.max(val, slider.min), slider.max);
+                currentUnit = unit;
+            }
+
+            document.getElementById('unit-kg').className = unit === 'kg'
+                ? 'px-2.5 py-0.5 rounded-md text-xs font-grotesk bg-indigo-500 text-white transition'
+                : 'px-2.5 py-0.5 rounded-md text-xs font-grotesk text-slate-400 hover:text-white transition';
+            document.getElementById('unit-lbs').className = unit === 'lbs'
+                ? 'px-2.5 py-0.5 rounded-md text-xs font-grotesk bg-indigo-500 text-white transition'
+                : 'px-2.5 py-0.5 rounded-md text-xs font-grotesk text-slate-400 hover:text-white transition';
+
+            updateSimulator();
+        }
+
+        function syncWeightSlider(val) {
+            document.getElementById('earth-weight').value = val;
+            updateSimulator();
+        }
+
+        function setAlignment(mode) {
+            currentAlignment = mode;
+            const closeBtn = document.getElementById('align-closest');
+            const farBtn = document.getElementById('align-conjunction');
+
+            if (mode === 'closest') {
+                closeBtn.className = 'px-4 py-3 rounded-xl text-left border border-indigo-400/50 bg-indigo-500/20 text-white transition';
+                farBtn.className = 'px-4 py-3 rounded-xl text-left border border-white/10 bg-slate-800/60 text-slate-400 hover:text-white transition';
+            } else {
+                farBtn.className = 'px-4 py-3 rounded-xl text-left border border-indigo-400/50 bg-indigo-500/20 text-white transition';
+                closeBtn.className = 'px-4 py-3 rounded-xl text-left border border-white/10 bg-slate-800/60 text-slate-400 hover:text-white transition';
+            }
+            updateSimulator();
+        }
+
+        function updateSimulator() {
+            const rawWeight = parseFloat(document.getElementById('earth-weight').value);
+            const weight = isNaN(rawWeight) || rawWeight < 0 ? 0 : rawWeight;
+
+            const moonWeight = (weight * 0.1654).toFixed(1);
+            const marsWeight = (weight * 0.379).toFixed(1);
+
+            document.getElementById('moon-weight-out').innerHTML = `${moonWeight} <span class="text-sm font-normal">${currentUnit}</span>`;
+            document.getElementById('mars-weight-out').innerHTML = `${marsWeight} <span class="text-sm font-normal">${currentUnit}</span>`;
+
+            if (currentAlignment === 'closest') {
+                document.getElementById('moon-dist-out').textContent = '363,300 km (Perigee)';
+                document.getElementById('moon-ping-out').textContent = '1.21 seconds';
+                document.getElementById('moon-travel-out').textContent = '~3 Days';
+
+                document.getElementById('mars-dist-out').textContent = '54.6 Million km';
+                document.getElementById('mars-ping-out').textContent = '3 min 02 sec';
+                document.getElementById('mars-travel-out').textContent = '6 – 8 Months';
+            } else {
+                document.getElementById('moon-dist-out').textContent = '405,500 km (Apogee)';
+                document.getElementById('moon-ping-out').textContent = '1.35 seconds';
+                document.getElementById('moon-travel-out').textContent = '~3.5 Days';
+
+                document.getElementById('mars-dist-out').textContent = '401.0 Million km';
+                document.getElementById('mars-ping-out').textContent = '22 min 18 sec';
+                document.getElementById('mars-travel-out').textContent = 'Launch Window Closed';
+            }
+        }
+
+        // Initialize default simulator readout
+        updateSimulator();
+    </script>
+</body>
+</html>
